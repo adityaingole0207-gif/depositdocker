@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2e2c22" />
+      <stop offset="100%" stop-color="#191813" />
+    </linearGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bgGrad)"/>
+  <rect width="800" height="600" fill="url(#grid)"/>
+
+  <!-- Camera HUD Crosshairs -->
+  <circle cx="400" cy="300" r="140" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1" stroke-dasharray="6 6"/>
+  <line x1="380" y1="300" x2="420" y2="300" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+  <line x1="400" y1="280" x2="400" y2="320" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+
+  <!-- HUD Corner Brackets -->
+  <path d="M 40 70 L 40 40 L 70 40" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 760 70 L 760 40 L 730 40" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 40 530 L 40 560 L 70 560" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+  <path d="M 760 530 L 760 560 L 730 560" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+
+  <!-- Inspection Item Visual Motif -->
+  <rect x="250" y="180" width="300" height="200" rx="8" fill="rgba(255,255,255,0.03)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+  <text x="400" y="240" font-family="monospace" font-size="14" fill="rgba(255,255,255,0.5)" text-anchor="middle" letter-spacing="2">INSPECTION TARGET</text>
+  <text x="400" y="275" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="20" fill="#F4EFE6" text-anchor="middle">Living Room False Ceiling & Cove</text>
+  <text x="400" y="305" font-family="monospace" font-size="13" fill="#C27803" text-anchor="middle">CATEGORY: CEILING</text>
+  <text x="400" y="340" font-family="monospace" font-size="16" font-weight="bold" fill="#F4EFE6" text-anchor="middle">RATING: 3/5 • FAIR</text>
+
+  <!-- Tamper-evident Ledger Overlay Banner -->
+  <rect x="30" y="500" width="740" height="70" rx="4" fill="rgba(10, 10, 10, 0.85)" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+  <text x="50" y="525" font-family="monospace" font-size="11" fill="#DCD4C4">PROPERTY: Chinchwad Empire Estate 1BHK (Move-Out)</text>
+  <text x="50" y="545" font-family="monospace" font-size="11" fill="rgba(255,255,255,0.6)">EXIF TIMESTAMP: 2024-06-30T00:12:00.000Z | GPS: 18.6279° N, 73.7831° E</text>
+  <text x="50" y="560" font-family="monospace" font-size="9" fill="#2F5D50">SHA-256 CRYPTO-SEALED EVIDENCE PROOF</text>
+
+  <!-- Notary Stamp Badge on upper right -->
+  <g transform="translate(620, 70) rotate(-6)">
+    <rect x="-10" y="-10" width="130" height="42" rx="3" fill="none" stroke="#C27803" stroke-width="2.5" stroke-dasharray="8 3"/>
+    <text x="55" y="16" font-family="'Fraunces', serif" font-weight="bold" font-size="11" fill="#C27803" text-anchor="middle" letter-spacing="1">FAIR WEAR</text>
+  </g>
+</svg>

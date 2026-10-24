@@ -1,0 +1,156 @@
+// DepositLocker Database Schema
+// Switchable between SQLite and PostgreSQL by altering the provider line below:
+// datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                String               @id @default(uuid())
+  email             String               @unique
+  passwordHash      String
+  name              String
+  phone             String?
+  preferredLanguage String               @default("en") // en, hi, mr
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  rooms             Room[]
+  resetTokens       PasswordResetToken[]
+  notifications     Notification[]
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Room {
+  id              String             @id @default(uuid())
+  userId          String
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title           String
+  propertyType    String             // e.g. "1BHK Flat", "Single Room in PG", "2BHK Shared Flat"
+  address         String
+  area            String             // Akurdi, Wakad, Hinjewadi, Nigdi, Chinchwad, Kothrud
+  city            String             @default("Pune / PCMC")
+  pincode         String
+  monthlyRent     Int
+  securityDeposit Int
+  leaseStartDate  DateTime
+  leaseEndDate    DateTime
+  landlordName    String
+  landlordPhone   String
+  landlordEmail   String?
+  agreementUrl    String?
+  status          String             @default("MOVE_IN_PENDING") // MOVE_IN_PENDING, LOCKED, MOVE_OUT_PENDING, COMPARED, SETTLED, ARCHIVED
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  reports         InspectionReport[]
+}
+
+model ChecklistItem {
+  id                   String                 @id @default(uuid())
+  code                 String                 @unique
+  category             String                 // Walls and Paint, Flooring, Ceiling, Doors and Windows, Furniture, Electrical, Bathroom, Kitchen/Balcony, Safety
+  name                 String
+  typicalRepairCostInr Int
+  damageHint           String
+  wearTolerance        String                 @default("MEDIUM") // LOW, MEDIUM, HIGH
+  sortOrder            Int                    @default(0)
+  itemRecords          InspectionItemRecord[]
+}
+
+model InspectionReport {
+  id                   String                 @id @default(uuid())
+  roomId               String
+  room                 Room                   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  type                 String                 // MOVE_IN or MOVE_OUT
+  status               String                 @default("DRAFT") // DRAFT, LOCKED
+  reportNumber         String                 @unique
+  chainedHash          String?                // SHA-256 chain of all item hashes
+  lockedAt             DateTime?
+  completedAt          DateTime?
+  tenantSignature      String?
+  landlordSignature    String?
+  landlordAcknowledgedAt DateTime?
+  landlordName         String?
+  landlordPhone        String?
+  landlordNotes        String?
+  landlordStatus       String                 @default("PENDING") // PENDING, ACKNOWLEDGED, DISPUTED
+  shareToken           String                 @unique @default(uuid())
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  items                InspectionItemRecord[]
+}
+
+model InspectionItemRecord {
+  id                String           @id @default(uuid())
+  reportId          String
+  report            InspectionReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  checklistItemId   String
+  checklistItem     ChecklistItem    @relation(fields: [checklistItemId], references: [id])
+  conditionRating   Int              // 1: Damaged, 2: Poor, 3: Fair, 4: Good, 5: Like New
+  notes             String?
+  status            String           @default("INTACT") // INTACT, NORMAL_WEAR, POSSIBLE_DAMAGE, PRE_EXISTING
+  estimatedDeduction Int             @default(0)
+  landlordDisputed  Boolean          @default(false)
+  landlordComment   String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  photos            EvidencePhoto[]
+}
+
+model EvidencePhoto {
+  id                 String               @id @default(uuid())
+  itemRecordId       String
+  itemRecord         InspectionItemRecord @relation(fields: [itemRecordId], references: [id], onDelete: Cascade)
+  fileUrl            String
+  thumbnail          String?
+  sha256Hash         String               // SHA-256 of the photo buffer
+  serverTimestamp    DateTime             @default(now())
+  exifCaptureDate    DateTime?
+  exifGpsLat         Float?
+  exifGpsLng         Float?
+  deviceLastModified DateTime?
+  fileSize           Int                  @default(0)
+  mimeType           String               @default("image/jpeg")
+  createdAt          DateTime             @default(now())
+}
+
+model TenantSurveyResponse {
+  id                 String   @id @default(uuid())
+  tenantName         String
+  cityArea           String   // Akurdi, Wakad, Hinjewadi, Nigdi, Chinchwad, Kothrud
+  propertyType       String
+  depositPaid        Int
+  depositDeducted    Int
+  deductionReason    String   // "Wall scuffs & repainting", "Deep cleaning charges", "Floor tile scratch", etc.
+  hadPhotoProof      Boolean
+  disputeOutcome     String   // "Full Loss", "Partial Recovery", "Full Refund"
+  satisfactionScore  Int      // 1-5
+  rentTenancyMonths  Int
+  createdAt          DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   // LOCK, ACKNOWLEDGMENT, COMPARISON, REMINDER
+  isRead    Boolean  @default(false)
+  linkUrl   String?
+  createdAt DateTime @default(now())
+}
