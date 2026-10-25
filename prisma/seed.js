@@ -450,6 +450,12 @@ const TENANT_SURVEY_DATA = [
 ];
 
 async function main() {
+  const existingUsers = await prisma.user.count().catch(() => 0);
+  if (existingUsers > 0 && !process.env.FORCE_SEED) {
+    console.log(`Database already contains ${existingUsers} user(s). Skipping seed.`);
+    return;
+  }
+
   console.log('🧹 Clearing existing database records...');
   await prisma.evidencePhoto.deleteMany();
   await prisma.inspectionItemRecord.deleteMany();
