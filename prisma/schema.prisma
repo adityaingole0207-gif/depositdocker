@@ -1,6 +1,6 @@
 // DepositLocker Database Schema
-// Switchable between SQLite and PostgreSQL by altering the provider line below:
-// datasource db { provider = "postgresql" url = env("DATABASE_URL") }
+// LOCAL DEV  : DATABASE_URL="file:./dev.db"  provider = "sqlite"
+// PRODUCTION : DATABASE_URL="postgresql://..."  provider = "postgresql"
 
 generator client {
   provider      = "prisma-client-js"
@@ -8,7 +8,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -73,43 +73,43 @@ model ChecklistItem {
 }
 
 model InspectionReport {
-  id                   String                 @id @default(uuid())
-  roomId               String
-  room                 Room                   @relation(fields: [roomId], references: [id], onDelete: Cascade)
-  type                 String                 // MOVE_IN or MOVE_OUT
-  status               String                 @default("DRAFT") // DRAFT, LOCKED
-  reportNumber         String                 @unique
-  chainedHash          String?                // SHA-256 chain of all item hashes
-  lockedAt             DateTime?
-  completedAt          DateTime?
-  tenantSignature      String?
-  landlordSignature    String?
+  id                     String                 @id @default(uuid())
+  roomId                 String
+  room                   Room                   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  type                   String                 // MOVE_IN or MOVE_OUT
+  status                 String                 @default("DRAFT") // DRAFT, LOCKED
+  reportNumber           String                 @unique
+  chainedHash            String?                // SHA-256 chain of all item hashes
+  lockedAt               DateTime?
+  completedAt            DateTime?
+  tenantSignature        String?
+  landlordSignature      String?
   landlordAcknowledgedAt DateTime?
-  landlordName         String?
-  landlordPhone        String?
-  landlordNotes        String?
-  landlordStatus       String                 @default("PENDING") // PENDING, ACKNOWLEDGED, DISPUTED
-  shareToken           String                 @unique @default(uuid())
-  createdAt            DateTime               @default(now())
-  updatedAt            DateTime               @updatedAt
-  items                InspectionItemRecord[]
+  landlordName           String?
+  landlordPhone          String?
+  landlordNotes          String?
+  landlordStatus         String                 @default("PENDING") // PENDING, ACKNOWLEDGED, DISPUTED
+  shareToken             String                 @unique @default(uuid())
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+  items                  InspectionItemRecord[]
 }
 
 model InspectionItemRecord {
-  id                String           @id @default(uuid())
-  reportId          String
-  report            InspectionReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
-  checklistItemId   String
-  checklistItem     ChecklistItem    @relation(fields: [checklistItemId], references: [id])
-  conditionRating   Int              // 1: Damaged, 2: Poor, 3: Fair, 4: Good, 5: Like New
-  notes             String?
-  status            String           @default("INTACT") // INTACT, NORMAL_WEAR, POSSIBLE_DAMAGE, PRE_EXISTING
-  estimatedDeduction Int             @default(0)
-  landlordDisputed  Boolean          @default(false)
-  landlordComment   String?
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
-  photos            EvidencePhoto[]
+  id                 String           @id @default(uuid())
+  reportId           String
+  report             InspectionReport @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  checklistItemId    String
+  checklistItem      ChecklistItem    @relation(fields: [checklistItemId], references: [id])
+  conditionRating    Int              // 1: Damaged, 2: Poor, 3: Fair, 4: Good, 5: Like New
+  notes              String?
+  status             String           @default("INTACT") // INTACT, NORMAL_WEAR, POSSIBLE_DAMAGE, PRE_EXISTING
+  estimatedDeduction Int              @default(0)
+  landlordDisputed   Boolean          @default(false)
+  landlordComment    String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  photos             EvidencePhoto[]
 }
 
 model EvidencePhoto {
@@ -130,18 +130,18 @@ model EvidencePhoto {
 }
 
 model TenantSurveyResponse {
-  id                 String   @id @default(uuid())
-  tenantName         String
-  cityArea           String   // Akurdi, Wakad, Hinjewadi, Nigdi, Chinchwad, Kothrud
-  propertyType       String
-  depositPaid        Int
-  depositDeducted    Int
-  deductionReason    String   // "Wall scuffs & repainting", "Deep cleaning charges", "Floor tile scratch", etc.
-  hadPhotoProof      Boolean
-  disputeOutcome     String   // "Full Loss", "Partial Recovery", "Full Refund"
-  satisfactionScore  Int      // 1-5
-  rentTenancyMonths  Int
-  createdAt          DateTime @default(now())
+  id                String   @id @default(uuid())
+  tenantName        String
+  cityArea          String   // Akurdi, Wakad, Hinjewadi, Nigdi, Chinchwad, Kothrud
+  propertyType      String
+  depositPaid       Int
+  depositDeducted   Int
+  deductionReason   String   // "Wall scuffs & repainting", "Deep cleaning charges", "Floor tile scratch", etc.
+  hadPhotoProof     Boolean
+  disputeOutcome    String   // "Full Loss", "Partial Recovery", "Full Refund"
+  satisfactionScore Int      // 1-5
+  rentTenancyMonths Int
+  createdAt         DateTime @default(now())
 }
 
 model Notification {
